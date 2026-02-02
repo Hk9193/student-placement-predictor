@@ -1,0 +1,17 @@
+# Python cache
+_pycache_/
+*.pyc
+
+# Virtual environments
+venv/
+.env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# ML artifacts
+model.pkl
+scaler.pkl
+
+# OS files
+.DS_Store
