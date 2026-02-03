@@ -1,0 +1,9 @@
+__pycache__/
+.ipynb_checkpoints/
+.git/
+.gitignore
+.env
+venv/
+conda/
+*.pyc
+notebooks/
