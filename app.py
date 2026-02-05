@@ -1,6 +1,7 @@
 import streamlit as st
 from src.predict import predict
 import plotly.graph_objects as go
+import time
 
 # ---------------- PAGE CONFIG ----------------
 st.set_page_config(
@@ -9,60 +10,77 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------------- CYBERPUNK NEON CSS ----------------
+# ---------------- GLOBAL CSS ----------------
 st.markdown("""
 <style>
-.main {
+body {
     background: radial-gradient(circle at top, #0f0c29, #302b63, #24243e);
 }
 
 .block-container {
     padding-top: 2rem;
+    padding-bottom: 2rem;
 }
 
-.neon-card {
-    background: rgba(20, 20, 40, 0.85);
-    border-radius: 20px;
-    padding: 30px;
-    border: 1px solid rgba(0, 255, 255, 0.35);
-    box-shadow: 0 0 20px rgba(0,255,255,0.25);
+/* Glass card */
+.glass {
+    background: rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(18px);
+    border-radius: 18px;
+    padding: 25px;
+    border: 1px solid rgba(255,255,255,0.15);
+    box-shadow: 0 0 30px rgba(0,255,255,0.15);
 }
 
+/* Title */
 .title {
     text-align: center;
-    font-size: 46px;
+    font-size: 48px;
     font-weight: 900;
     color: #00ffff;
-    text-shadow: 0 0 12px #00ffff;
+    text-shadow: 0 0 15px #00ffff;
 }
 
 .subtitle {
     text-align: center;
     font-size: 18px;
-    color: #c7d2fe;
+    color: #cbd5f5;
     margin-bottom: 35px;
 }
 
-.neon-success {
+/* Result cards */
+.success {
     background: linear-gradient(135deg, #00ffcc, #00c6ff);
-    padding: 22px;
+    color: #001b1b;
+    padding: 25px;
     border-radius: 18px;
-    text-align: center;
-    font-size: 24px;
+    font-size: 26px;
     font-weight: 800;
-    color: black;
-    box-shadow: 0 0 25px rgba(0,255,255,0.7);
+    text-align: center;
+    box-shadow: 0 0 30px rgba(0,255,255,0.7);
 }
 
-.neon-fail {
+.fail {
     background: linear-gradient(135deg, #ff0844, #ff416c);
-    padding: 22px;
-    border-radius: 18px;
-    text-align: center;
-    font-size: 24px;
-    font-weight: 800;
     color: white;
-    box-shadow: 0 0 25px rgba(255,0,80,0.7);
+    padding: 25px;
+    border-radius: 18px;
+    font-size: 26px;
+    font-weight: 800;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255,0,80,0.7);
+}
+
+/* Button */
+div.stButton > button {
+    background: linear-gradient(135deg, #00ffff, #00c6ff);
+    color: black;
+    font-weight: 800;
+    border-radius: 14px;
+    height: 3.2em;
+    font-size: 18px;
+    border: none;
+    box-shadow: 0 0 25px rgba(0,255,255,0.6);
 }
 </style>
 """, unsafe_allow_html=True)
@@ -75,7 +93,7 @@ st.markdown(
 )
 
 # ---------------- INPUT SECTION ----------------
-st.markdown("<div class='neon-card'>", unsafe_allow_html=True)
+st.markdown("<div class='glass'>", unsafe_allow_html=True)
 st.subheader("🧠 Student Skill Matrix")
 
 col1, col2 = st.columns(2)
@@ -92,14 +110,14 @@ with col2:
     readiness = st.slider("🚀 Placement Readiness", 0, 100, 65)
 
 st.markdown("</div>", unsafe_allow_html=True)
-
 st.markdown("<br>", unsafe_allow_html=True)
 
-# ---------------- PREDICT BUTTON ----------------
-predict_btn = st.button("⚡ RUN AI PREDICTION", use_container_width=True)
+# ---------------- PREDICT ----------------
+if st.button("⚡ RUN AI PREDICTION", use_container_width=True):
 
-# ---------------- RESULTS ----------------
-if predict_btn:
+    with st.spinner("⚡ Analyzing student profile..."):
+        time.sleep(1)
+
     input_data = {
         "Maths": maths,
         "Python": python_score,
@@ -115,71 +133,71 @@ if predict_btn:
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ---------- RESULT CARD ----------
+    # ---------------- RESULT ----------------
     if prediction == 1:
         st.markdown(
-            f"<div class='neon-success'>✅ PLACED<br>Confidence: {confidence:.1f}%</div>",
+            f"<div class='success'>✅ PLACED<br>Confidence: {confidence:.1f}%</div>",
             unsafe_allow_html=True
         )
         st.balloons()
     else:
         st.markdown(
-            f"<div class='neon-fail'>❌ NOT PLACED<br>Confidence: {confidence:.1f}%</div>",
+            f"<div class='fail'>❌ NOT PLACED<br>Confidence: {confidence:.1f}%</div>",
             unsafe_allow_html=True
         )
 
     st.markdown("<br>", unsafe_allow_html=True)
 
-    # ---------------- CONFIDENCE METER ----------------
-    st.subheader("📊 Confidence Meter")
+    # ---------------- CHARTS ----------------
+    colA, colB = st.columns(2)
 
-    gauge = go.Figure(go.Indicator(
-        mode="gauge+number",
-        value=confidence,
-        gauge={
-            "axis": {"range": [0, 100]},
-            "bar": {"color": "#00ffff"},
-            "steps": [
-                {"range": [0, 40], "color": "#ff4b5c"},
-                {"range": [40, 70], "color": "#fbbf24"},
-                {"range": [70, 100], "color": "#22c55e"},
-            ],
-        },
-        number={"suffix": "%"},
-        title={"text": "Placement Confidence"}
-    ))
+    with colA:
+        st.subheader("📊 Confidence Meter")
+        gauge = go.Figure(go.Indicator(
+            mode="gauge+number",
+            value=confidence,
+            gauge={
+                "axis": {"range": [0, 100]},
+                "bar": {"color": "#00ffff"},
+                "steps": [
+                    {"range": [0, 40], "color": "#ff4b5c"},
+                    {"range": [40, 70], "color": "#fbbf24"},
+                    {"range": [70, 100], "color": "#22c55e"},
+                ],
+            },
+            number={"suffix": "%"}
+        ))
 
-    gauge.update_layout(
-        paper_bgcolor="rgba(0,0,0,0)",
-        font={"color": "white"}
-    )
+        gauge.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            font={"color": "white"}
+        )
 
-    st.plotly_chart(gauge, use_container_width=True)
+        st.plotly_chart(gauge, use_container_width=True)
 
-    # ---------------- PROBABILITY BAR CHART ----------------
-    st.subheader("📈 Placement Probability Comparison")
+    with colB:
+        st.subheader("📈 Probability Comparison")
+        bar_fig = go.Figure(
+            data=[
+                go.Bar(
+                    x=["Not Placed", "Placed"],
+                    y=[100 - confidence, confidence],
+                    marker_color=["#ff4b5c", "#00ffff"]
+                )
+            ]
+        )
 
-    bar_fig = go.Figure(
-        data=[
-            go.Bar(
-                x=["Not Placed", "Placed"],
-                y=[100 - confidence, confidence],
-                marker_color=["#ff4b5c", "#00ffff"]
-            )
-        ]
-    )
+        bar_fig.update_layout(
+            paper_bgcolor="rgba(0,0,0,0)",
+            plot_bgcolor="rgba(0,0,0,0)",
+            yaxis_title="Probability (%)",
+            font=dict(color="white")
+        )
 
-    bar_fig.update_layout(
-        paper_bgcolor="rgba(0,0,0,0)",
-        plot_bgcolor="rgba(0,0,0,0)",
-        yaxis_title="Probability (%)",
-        font=dict(color="white")
-    )
-
-    st.plotly_chart(bar_fig, use_container_width=True)
+        st.plotly_chart(bar_fig, use_container_width=True)
 
 # ---------------- FOOTER ----------------
 st.markdown(
-    "<p style='text-align:center; color:#9ca3af; margin-top:40px;'>⚡ Cyberpunk ML Dashboard • Built with Streamlit</p>",
+    "<p style='text-align:center; color:#9ca3af; margin-top:40px;'>⚡ Cyberpunk ML Dashboard • Deployed with CI/CD</p>",
     unsafe_allow_html=True
 )
