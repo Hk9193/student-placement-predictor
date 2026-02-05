@@ -10,194 +10,211 @@ st.set_page_config(
     layout="wide"
 )
 
-# ---------------- GLOBAL CSS ----------------
+# ---------------- CSS (DESIGN SYSTEM) ----------------
 st.markdown("""
 <style>
 body {
-    background: radial-gradient(circle at top, #0f0c29, #302b63, #24243e);
+    background-color: #F0F4F8;
 }
 
 .block-container {
-    padding-top: 2rem;
-    padding-bottom: 2rem;
+    padding: 32px;
+    max-width: 1400px;
 }
 
-/* Glass card */
-.glass {
-    background: rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(18px);
-    border-radius: 18px;
-    padding: 25px;
-    border: 1px solid rgba(255,255,255,0.15);
-    box-shadow: 0 0 30px rgba(0,255,255,0.15);
-}
-
-/* Title */
-.title {
-    text-align: center;
-    font-size: 48px;
-    font-weight: 900;
-    color: #00ffff;
-    text-shadow: 0 0 15px #00ffff;
-}
-
-.subtitle {
-    text-align: center;
-    font-size: 18px;
-    color: #cbd5f5;
-    margin-bottom: 35px;
-}
-
-/* Result cards */
-.success {
-    background: linear-gradient(135deg, #00ffcc, #00c6ff);
-    color: #001b1b;
-    padding: 25px;
-    border-radius: 18px;
-    font-size: 26px;
+/* HEADER */
+.header-title {
+    font-size: 36px;
     font-weight: 800;
+    color: #00D4FF;
     text-align: center;
-    box-shadow: 0 0 30px rgba(0,255,255,0.7);
 }
 
-.fail {
-    background: linear-gradient(135deg, #ff0844, #ff416c);
-    color: white;
-    padding: 25px;
-    border-radius: 18px;
-    font-size: 26px;
-    font-weight: 800;
+.header-subtitle {
+    font-size: 14px;
+    color: #8B92A1;
     text-align: center;
-    box-shadow: 0 0 30px rgba(255,0,80,0.7);
+    margin-bottom: 30px;
 }
 
-/* Button */
-div.stButton > button {
-    background: linear-gradient(135deg, #00ffff, #00c6ff);
-    color: black;
-    font-weight: 800;
+/* CARDS */
+.card {
+    background: #FFFFFF;
     border-radius: 14px;
-    height: 3.2em;
-    font-size: 18px;
+    padding: 22px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    transition: all 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+/* SECTION HEADERS */
+.section-title {
+    font-size: 20px;
+    font-weight: 700;
+    color: #2D3436;
+    margin-bottom: 16px;
+}
+
+/* RESULT BANNER */
+.result-success {
+    background: linear-gradient(135deg, #00D4FF, #00B8D4);
+    color: white;
+    padding: 22px;
+    border-radius: 14px;
+    font-size: 20px;
+    font-weight: 800;
+    text-align: center;
+}
+
+.result-fail {
+    background: linear-gradient(135deg, #FF1654, #FF006E);
+    color: white;
+    padding: 22px;
+    border-radius: 14px;
+    font-size: 20px;
+    font-weight: 800;
+    text-align: center;
+}
+
+/* BUTTON */
+div.stButton > button {
+    background: linear-gradient(135deg, #00D4FF, #0099FF);
+    color: white;
+    font-weight: 700;
+    font-size: 16px;
+    border-radius: 12px;
+    padding: 12px;
     border: none;
-    box-shadow: 0 0 25px rgba(0,255,255,0.6);
+    transition: 0.3s ease;
+}
+
+div.stButton > button:hover {
+    transform: scale(1.02);
+    background: linear-gradient(135deg, #00B8D4, #0077FF);
 }
 </style>
 """, unsafe_allow_html=True)
 
 # ---------------- HEADER ----------------
-st.markdown("<div class='title'>⚡ Student Placement Predictor</div>", unsafe_allow_html=True)
+st.markdown("<div class='header-title'>⚡ Student Placement Predictor</div>", unsafe_allow_html=True)
 st.markdown(
-    "<div class='subtitle'>Cyberpunk AI • Placement Probability • Real-time Insights</div>",
+    "<div class='header-subtitle'>Cyberpunk AI • Placement Probability • Real-time Insights</div>",
     unsafe_allow_html=True
 )
 
-# ---------------- INPUT SECTION ----------------
-st.markdown("<div class='glass'>", unsafe_allow_html=True)
-st.subheader("🧠 Student Skill Matrix")
+# ---------------- MAIN GRID ----------------
+left, right = st.columns([1.1, 0.9], gap="large")
 
-col1, col2 = st.columns(2)
+# ---------------- INPUT CARD ----------------
+with left:
+    st.markdown("<div class='card'>", unsafe_allow_html=True)
+    st.markdown("<div class='section-title'>🧠 Student Skill Matrix</div>", unsafe_allow_html=True)
 
-with col1:
     maths = st.slider("📐 Maths Score", 0, 100, 60)
     python_score = st.slider("🐍 Python Score", 0, 100, 60)
     sql = st.slider("🗄 SQL Score", 0, 100, 60)
     attendance = st.slider("📅 Attendance (%)", 0, 100, 75)
 
-with col2:
     mini_projects = st.number_input("🧩 Mini Projects", min_value=0, step=1)
     communication = st.slider("🗣 Communication Skills", 1, 10, 6)
     readiness = st.slider("🚀 Placement Readiness", 0, 100, 65)
 
-st.markdown("</div>", unsafe_allow_html=True)
-st.markdown("<br>", unsafe_allow_html=True)
+    st.markdown("</div>", unsafe_allow_html=True)
 
-# ---------------- PREDICT ----------------
-if st.button("⚡ RUN AI PREDICTION", use_container_width=True):
+# ---------------- OUTPUT ----------------
+with right:
+    if st.button("⚡ RUN AI PREDICTION", use_container_width=True):
 
-    with st.spinner("⚡ Analyzing student profile..."):
-        time.sleep(1)
+        with st.spinner("Analyzing profile..."):
+            time.sleep(1)
 
-    input_data = {
-        "Maths": maths,
-        "Python": python_score,
-        "SQL": sql,
-        "Attendance": attendance,
-        "Mini_Projects": mini_projects,
-        "Communication_Score": communication,
-        "Placement_Readiness_Score": readiness
-    }
+        input_data = {
+            "Maths": maths,
+            "Python": python_score,
+            "SQL": sql,
+            "Attendance": attendance,
+            "Mini_Projects": mini_projects,
+            "Communication_Score": communication,
+            "Placement_Readiness_Score": readiness
+        }
 
-    prediction, probability = predict(input_data)
-    confidence = probability * 100
+        prediction, probability = predict(input_data)
+        confidence = probability * 100
 
-    st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
 
-    # ---------------- RESULT ----------------
-    if prediction == 1:
-        st.markdown(
-            f"<div class='success'>✅ PLACED<br>Confidence: {confidence:.1f}%</div>",
-            unsafe_allow_html=True
-        )
-        st.balloons()
-    else:
-        st.markdown(
-            f"<div class='fail'>❌ NOT PLACED<br>Confidence: {confidence:.1f}%</div>",
-            unsafe_allow_html=True
-        )
+        # RESULT BANNER
+        if prediction == 1:
+            st.markdown(
+                f"<div class='result-success'>✓ PLACED<br>Confidence: {confidence:.1f}%</div>",
+                unsafe_allow_html=True
+            )
+        else:
+            st.markdown(
+                f"<div class='result-fail'>✗ NOT PLACED<br>Confidence: {confidence:.1f}%</div>",
+                unsafe_allow_html=True
+            )
 
-    st.markdown("<br>", unsafe_allow_html=True)
+        st.markdown("<br>", unsafe_allow_html=True)
 
-    # ---------------- CHARTS ----------------
-    colA, colB = st.columns(2)
+        # ---------------- CONFIDENCE METER ----------------
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        st.markdown("<div class='section-title'>📈 Confidence Meter</div>", unsafe_allow_html=True)
 
-    with colA:
-        st.subheader("📊 Confidence Meter")
         gauge = go.Figure(go.Indicator(
             mode="gauge+number",
             value=confidence,
+            number={"suffix": "%"},
             gauge={
                 "axis": {"range": [0, 100]},
-                "bar": {"color": "#00ffff"},
+                "bar": {"color": "#00D4FF"},
                 "steps": [
-                    {"range": [0, 40], "color": "#ff4b5c"},
-                    {"range": [40, 70], "color": "#fbbf24"},
-                    {"range": [70, 100], "color": "#22c55e"},
+                    {"range": [0, 40], "color": "#FF1654"},
+                    {"range": [40, 70], "color": "#FFB703"},
+                    {"range": [70, 100], "color": "#2ECC71"},
                 ],
-            },
-            number={"suffix": "%"}
+            }
         ))
 
         gauge.update_layout(
             paper_bgcolor="rgba(0,0,0,0)",
-            font={"color": "white"}
+            font={"color": "#2D3436"}
         )
 
         st.plotly_chart(gauge, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
-    with colB:
-        st.subheader("📈 Probability Comparison")
-        bar_fig = go.Figure(
-            data=[
-                go.Bar(
-                    x=["Not Placed", "Placed"],
-                    y=[100 - confidence, confidence],
-                    marker_color=["#ff4b5c", "#00ffff"]
-                )
-            ]
-        )
+        st.markdown("<br>", unsafe_allow_html=True)
+
+        # ---------------- BAR CHART ----------------
+        st.markdown("<div class='card'>", unsafe_allow_html=True)
+        st.markdown("<div class='section-title'>📊 Probability Comparison</div>", unsafe_allow_html=True)
+
+        bar_fig = go.Figure(go.Bar(
+            x=[100 - confidence, confidence],
+            y=["Not Placed", "Placed"],
+            orientation="h",
+            marker_color=["#FF1654", "#00D4FF"],
+            text=[f"{100-confidence:.1f}%", f"{confidence:.1f}%"],
+            textposition="outside"
+        ))
 
         bar_fig.update_layout(
+            xaxis=dict(range=[0, 100]),
             paper_bgcolor="rgba(0,0,0,0)",
             plot_bgcolor="rgba(0,0,0,0)",
-            yaxis_title="Probability (%)",
-            font=dict(color="white")
+            font=dict(color="#2D3436")
         )
 
         st.plotly_chart(bar_fig, use_container_width=True)
+        st.markdown("</div>", unsafe_allow_html=True)
 
 # ---------------- FOOTER ----------------
 st.markdown(
-    "<p style='text-align:center; color:#9ca3af; margin-top:40px;'>⚡ Cyberpunk ML Dashboard • Deployed with CI/CD</p>",
+    "<p style='text-align:center; color:#8B92A1; margin-top:40px;'>⚡ Modern ML Dashboard • Auto-deployed via CI/CD</p>",
     unsafe_allow_html=True
 )
