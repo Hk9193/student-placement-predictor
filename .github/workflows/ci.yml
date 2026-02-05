@@ -1,0 +1,55 @@
+name: CI - Student Placement Predictor
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+
+jobs:
+  build-test:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.10"
+
+    - name: Upgrade pip
+      run: python -m pip install --upgrade pip
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Check ML artifacts
+      run: |
+        test -f model.pkl
+        test -f scaler.pkl
+        test -f features.pkl
+
+    - name: Smoke test prediction
+      run: |
+        python - <<EOF
+        from src.predict import predict
+
+        sample = {
+            "Maths": 70,
+            "Python": 75,
+            "SQL": 65,
+            "Attendance": 85,
+            "Mini_Projects": 3,
+            "Communication_Score": 7,
+            "Placement_Readiness_Score": 80
+        }
+
+        pred, prob = predict(sample)
+        print("Prediction:", pred)
+        print("Probability:", prob)
+        EOF
+
+    - name: Python syntax check
+      run: python -m compileall .
